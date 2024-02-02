@@ -14,10 +14,16 @@ type API struct {
 }
 
 func NewAPI(port int) *API {
-	r := gin.Default()
+
+	// Use below if we want the log
+	// r := gin.Default()
+
+	// Use below to hide the log
+	r := gin.New()
+	r.Use(gin.Recovery())
 
 	r.GET("/", rootHandler)
-	r.POST("/upload", uploadHandler)
+	r.POST("/", uploadHandler)
 
 	return &API{router: r, port: port}
 }
@@ -34,7 +40,7 @@ func uploadHandler(c *gin.Context) {
 		c.Error(err)
 		c.String(400, "failed to read request body, err: %s", err.Error())
 	}
-	// fmt.Println("file:", string(b))
+	defer c.Request.Body.Close()
 
 	// Copy to clipboard
 	if err := clipboard.Init(); err != nil {
@@ -43,10 +49,10 @@ func uploadHandler(c *gin.Context) {
 	}
 	// Write to clipboard
 	clipboard.Write(clipboard.FmtText, b)
-	fmt.Println("Copied file to clipboard")
+	fmt.Println("Copied file to clipboard!\nWaiting for file...(press CTRL+C to quit)")
 	c.String(201, "Uploaded, check your clipboard.\n")
 }
 
 func rootHandler(c *gin.Context) {
-	c.String(200, "Please POST to /upload with the data in the request body.")
+	c.String(200, "Please POST with the data in the request body.")
 }
