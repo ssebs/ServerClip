@@ -2,8 +2,10 @@ package api
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/gin-gonic/gin"
+	"golang.design/x/clipboard"
 )
 
 type API struct {
@@ -15,6 +17,7 @@ func NewAPI(port int) *API {
 	r := gin.Default()
 
 	r.GET("/", rootHandler)
+	r.POST("/upload", uploadHandler)
 
 	return &API{router: r, port: port}
 }
@@ -23,8 +26,27 @@ func (a *API) Run() error {
 	return a.router.Run(fmt.Sprintf("0.0.0.0:%d", a.port))
 }
 
+// uploadHandler will read the request body and put it on the clipboard.
+func uploadHandler(c *gin.Context) {
+	// read blob into b
+	b, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.Error(err)
+		c.String(400, "failed to read request body, err: %s", err.Error())
+	}
+	// fmt.Println("file:", string(b))
+
+	// Copy to clipboard
+	if err := clipboard.Init(); err != nil {
+		c.Error(err)
+		c.String(400, "failed to init clipboard, err: %s", err.Error())
+	}
+	// Write to clipboard
+	clipboard.Write(clipboard.FmtText, b)
+	fmt.Println("Copied file to clipboard")
+	c.String(201, "Uploaded, check your clipboard.\n")
+}
+
 func rootHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"status": "OK",
-	})
+	c.String(200, "Please POST to /upload with the data in the request body.")
 }
