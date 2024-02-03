@@ -61,8 +61,9 @@ Uploaded, check your clipboard.
 
 ## TODO
 - [x] Fix missing newlines / special chars
+- [x] Better usage / help
+- [ ] Client that supports piping
 - [ ] Build for more platforms
-- [ ] Better usage
 
 
 ### laptop => VM
