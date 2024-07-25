@@ -1,6 +1,6 @@
 # ServerClip
 
-Tool for copying contents of a file over various ssh connections. Need to get a log file over to your laptop? This can help.
+Tool for copying contents of a file over nested ssh connections. Need to get a log file over to your laptop? This can help.
 
 ## Usage
 - Download `ServerClip.exe` or `serverclip` (depending on OS)
